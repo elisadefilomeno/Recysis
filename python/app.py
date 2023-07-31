@@ -3,18 +3,39 @@ from datetime import datetime
 from termcolor import colored
 import pandas as pd
 import dill as pickle
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.stem.snowball import EnglishStemmer
 pd.options.mode.chained_assignment = None
 
 # save dataset
-recipe = pd.read_csv("../dataset/recipes.csv")
+recipe1 = pd.read_csv("../dataset/recipe1_ok.csv")
+recipe2 = pd.read_csv("../dataset/recipe2_ok.csv")
+recipe3 = pd.read_csv("../dataset/recipe3_ok.csv")
+recipe4 = pd.read_csv("../dataset/recipe4_ok.csv")
+recipe12 = pd.merge(recipe1, recipe2, how='outer')
+recipe123 = pd.merge(recipe12, recipe3, how='outer')
+recipe = pd.merge(recipe123, recipe4, how='outer')
 recipe = recipe.astype({"RecipeId": str})
-review = pd.read_csv("../dataset_2/predicted_all_comments.csv")
-users = pd.read_csv("../dataset_2/UserId_Password.csv")
+review1 = pd.read_csv("../dataset/review1.csv")
+review2 = pd.read_csv("../dataset/review2.csv")
+review3 = pd.read_csv("../dataset/review3.csv")
+review4 = pd.read_csv("../dataset/review4.csv")
+review5 = pd.read_csv("../dataset/review5.csv")
+review6 = pd.read_csv("../dataset/review6.csv")
+review12 = pd.merge(review1, review2, how='outer')
+review123 = pd.merge(review12, review3, how='outer')
+review1234 = pd.merge(review123, review4, how='outer')
+review12345 = pd.merge(review1234, review5, how='outer')
+review = pd.merge(review12345, review6, how='outer')
+users = pd.read_csv("../dataset/UserId_Password.csv")
 
 #  save model to text mining
-count_vect_model = pickle.load(open('../model/count_vect.sav', 'rb'))
-tfidf_model = pickle.load(open('../model/tfidf_model.sav', 'rb'))
-loaded_model = pickle.load(open("../model/static_model.sav", 'rb'))
+count_vect_model = pickle.load(open('../models/count_vect.sav', 'rb'))
+tfidf_model = pickle.load(open('../models/tfidf_model.sav', 'rb'))
+loaded_model = pickle.load(open("../models/static_model.sav", 'rb'))
+
+stemmer=EnglishStemmer()
+analyzer=CountVectorizer().build_analyzer()
 
 aut_id = 0
 aut_name = ""
@@ -44,7 +65,7 @@ def insertNewComment(id):
 
     print("The predicted sentiment of your comment is: " + predicted[0])
 
-    new_row = {'ReviewId': new_id, 'RecipeId': id, 'AuthorId': aut_id, 'AuthorName': aut_name, 'Rating': predicted[0],
+    new_row = {'ReviewId': new_id, 'RecipeId': int(id), 'AuthorId': aut_id, 'AuthorName': aut_name, 'Rating': predicted[0],
                'Review': new_comm[0], 'DateSubmitted': date, 'DateModified': date}
 
     #  Modify dataframe to memorize the new comment
@@ -54,7 +75,7 @@ def insertNewComment(id):
 
     #  Modify the csv File for a permanent modification
     headersCSV = ['ReviewId', 'RecipeId', 'AuthorId', 'AuthorName', 'Rating', 'Review', 'DateSubmitted', 'DateModified']
-    with open('../dataset_2/predicted_all_comments.csv', 'a', newline='') as f_object:
+    with open('../dataset/review6.csv', 'a', newline='') as f_object:
         dictwriter_object = DictWriter(f_object, fieldnames=headersCSV)
         dictwriter_object.writerow(new_row)
         f_object.close()
@@ -492,7 +513,7 @@ def control_login():
 
                 #  Modify the csv File for a permanent modification
                 headersCSV = ['UserId', 'UserName', 'Password']
-                with open('../dataset_2/UserId_Password.csv', 'a', newline='') as f_object:
+                with open('../dataset/UserId_Password.csv', 'a', newline='') as f_object:
                     dictwriter_object = DictWriter(f_object, fieldnames=headersCSV)
                     dictwriter_object.writerow(new_row)
                     f_object.close()

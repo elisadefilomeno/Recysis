@@ -14,11 +14,12 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 from nltk.stem.snowball import EnglishStemmer
 
-df=pd.read_csv("../dataset/training_set_piccolo_weka (3).csv")
+df=pd.read_csv("../dataset/dataset_2008.csv")
 
 
 def stemming(doc):
     return (stemmer.stem(w) for w in analyzer(doc))
+
 
 stemmer = EnglishStemmer()
 analyzer = CountVectorizer().build_analyzer()
@@ -47,7 +48,6 @@ print(metrics.classification_report(y, predicted,
 print(metrics.confusion_matrix(y, predicted))
 ConfusionMatrixDisplay.from_predictions(y,predicted)
 plt.title("Multinominal Naive Bayes Confusion Matrix")
-plt.savefig("../images/MultinominalNB.png")
 plt.show()
 
 
@@ -56,7 +56,6 @@ text_clf2 = Pipeline([
     ('vect', CountVectorizer(stop_words='english',strip_accents='ascii', lowercase=True,
                              token_pattern=r"(?u)\b[^\d\W][^\d\W]+\b", analyzer=stemming, max_features=3000)),
     ('tfidf', TfidfTransformer()),
-    #('reduce_dim', TruncatedSVD(n_components=100,n_iter=7, random_state=42)),
     ('feat_sel', SelectKBest(chi2,k=100)),
     ('clf', tree.DecisionTreeClassifier(max_leaf_nodes=30)),
 ])
@@ -73,7 +72,6 @@ print(metrics.classification_report(y, predicted,
 print(metrics.confusion_matrix(y, predicted))
 ConfusionMatrixDisplay.from_predictions(y,predicted)
 plt.title("Decision Tree Confusion Matrix")
-plt.savefig("../images/DecisionTree.png")
 plt.show()
 
 
@@ -97,7 +95,6 @@ print(metrics.classification_report(y, predicted,
 print(metrics.confusion_matrix(y, predicted))
 ConfusionMatrixDisplay.from_predictions(y,predicted)
 plt.title("Linear SVC Confusion Matrix")
-plt.savefig("../images/LinearSVC.png")
 plt.show()
 
 
@@ -107,7 +104,6 @@ text_clf4 = Pipeline([
                              token_pattern=r"(?u)\b[^\d\W][^\d\W]+\b",
                              analyzer=stemming,max_features=3000)),
     ('tfidf', TfidfTransformer()),
-    #('feat_sel', SelectKBest(chi2,k=70)),
     ('clf', KNeighborsClassifier(n_neighbors=40, weights='distance',n_jobs=-1)),
 ])
 #calculating accuracies in cross-valudation
@@ -122,7 +118,6 @@ print(metrics.confusion_matrix(y, predicted))
 
 ConfusionMatrixDisplay.from_predictions(y, predicted)
 plt.title("KNeighborsClassifier Confusion Matrix")
-plt.savefig("../images/KNeighborsClassifier.png")
 plt.show()
 
 #Pipeline Classifier5
@@ -144,6 +139,5 @@ print(metrics.confusion_matrix(y, predicted))
 
 ConfusionMatrixDisplay.from_predictions(y, predicted)
 plt.title("Random Forest Confusion Matrix")
-plt.savefig("../images/RandomForest.png")
 plt.show()
 

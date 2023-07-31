@@ -6,9 +6,6 @@ def modifyStr(x):
     x = x.replace('\n', '')
     x = x.replace('  ', '')
     x = x.replace('&', 'and')
-    x = x.replace(':)', '')
-    x = x.replace('=)', '')
-    x = x.replace(':-)', '')
     return x
 
 
